@@ -51,9 +51,110 @@ Intaker.Widget = function() {
   const originalTitle = document.title || '';
   let isAMP = false;
   let platform = null;
-  Intaker.Templates = window['IntakerWidgetTemplates'];
+  // Intaker.Templates       = window['IntakerWidgetTemplates'];
   let chatUniqueId = null;
   let manualOpenedChat = false;
+  const buttonTemplate = {
+    tag: 'div',
+    attrs: {'id': 'chatter-bot-launcher-container'},
+    classNames: [
+      'chatter-bot-flex-end',
+      'chatter-bot-avatar-launcher',
+      'chatter-bot-launcher-enabled',
+    ],
+    childNodes: [
+      {
+        tag: 'div',
+        attrs: {id: 'chatter-bot-avatar-text'},
+        childNodes: [
+          {
+            tag: 'div',
+            attrs: {id: 'chatter-bot-avatar-text-inner'},
+            content: 'Hi how can I help?',
+          },
+        ],
+      },
+      {
+        tag: 'div',
+        attrs: {id: 'chatter-bot-launcher'},
+        classNames: [
+          'chatter-bot-launcher',
+          'chatter-bot-flex-center',
+          'chatter-bot-launcher-active',
+        ],
+        childNodes: [
+          {
+            tag: 'div',
+            attrs: {id: 'chatter-bot-launcher-button'},
+            classNames: ['chatter-bot-launcher-button'],
+          },
+          {
+            tag: 'div',
+            attrs: {id: 'chatter-bot-launcher-text'},
+            content: 'Hi how can I help?',
+          },
+        ],
+      },
+    ],
+  };
+  const frameTemplate = {
+    tag: 'div',
+    attrs: {id: 'chatter-bot-frame-container'},
+    childNodes: [
+      {
+        tag: 'div',
+        attrs: {id: 'chatter-bot-frame-wrap'},
+        childNodes: [
+          {
+            tag: 'iframe',
+            attrs: {scrolling: 'no', id: 'chatter-bot-iframe'},
+          },
+        ],
+      },
+      {
+        tag: 'div',
+        attrs: {id: 'chatter-bot-widget-close', title: 'Close'},
+      },
+      {
+        tag: 'div',
+        attrs: {id: 'chatter-bot-launcher-restart', title: 'Start Over'},
+      },
+    ],
+  };
+
+  /**
+   *
+   * @param {Object} config
+   * @param {!Element} [parentElement]
+   */
+  function renderElement(config, parentElement) {
+    const el = document.createElement(config.tag);
+
+    if (config.attrs) {
+      for (const name in config.attrs) {
+        el.setAttribute(name, config.attrs[name]);
+      }
+    }
+    if (config.classNames) {
+      for (let i = 0, l = config.classNames.length; i < l; i++) {
+        el.classList.add(config.classNames[i]);
+      }
+    }
+
+    if (config.content) {
+      el.appendChild(document.createTextNode(config.content));
+    }
+
+    if (parentElement) {
+      parentElement.appendChild(el);
+    }
+
+    if (config.childNodes && config.childNodes.length) {
+      for (let i = 0, l = config.childNodes.length; i < l; i++) {
+        renderElement(config.childNodes[i], el);
+      }
+    }
+  }
 
   /**
    *
@@ -97,12 +198,12 @@ Intaker.Widget = function() {
    *
    * @param {string} string
    */
-  function addToBody(string) {
-    let tmp = document.createElement('div');
-    tmp./*OK*/ innerHTML = Intaker.sanitizeTemplate(string);
-    document.body.appendChild(tmp.firstChild);
-    tmp = null;
-  }
+  // function addToBody(string) {
+  //   let tmp             = document.createElement('div');
+  //   tmp./*OK*/innerHTML = Intaker.sanitizeTemplate(string);
+  //   document.body.appendChild(tmp.firstChild);
+  //   tmp = null;
+  // }
 
   /**
    *
@@ -154,12 +255,10 @@ Intaker.Widget = function() {
       }
 
       if (!frameContainer) {
-        addToBody(Intaker.Templates.frame);
+        renderElement(frameTemplate, document.body);
         frameContainer = document.getElementById(frameContainerId);
         closeBtn = document.getElementById(closeBtnId);
         restartBtn = document.getElementById(restartBtnId);
-
-        Intaker.createIFrame(document.getElementById('chatter-bot-frame-wrap'));
         frame = document.getElementById(frameId);
 
         hideEl(frameContainer);
@@ -473,7 +572,7 @@ Intaker.Widget = function() {
       !window.DEV_ENV && !isAMP && loadCss(cssUrl);
 
       getChatSetting(function(setting) {
-        addToBody(Intaker.Templates.button);
+        renderElement(buttonTemplate, document.body);
         launcherContainer = document.getElementById(
           'chatter-bot-launcher-container'
         );

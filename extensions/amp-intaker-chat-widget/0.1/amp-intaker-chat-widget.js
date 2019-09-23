@@ -19,9 +19,7 @@ import {CSS} from '../../../build/amp-intaker-chat-widget-0.1.css';
 import {CookiesAPI} from './cookies';
 import {Layout} from '../../../src/layout';
 import {Services} from '../../../src/services';
-import {sanitizeHtml} from '../../../src/sanitizer';
 import {setStyle, toggle} from '../../../src/style';
-import {templates} from './templates';
 import {toWin} from '../../../src/types';
 import {widget} from './widget';
 
@@ -74,25 +72,13 @@ export class AmpIntakerChatWidget extends AMP.BaseElement {
       CookiesAPI: new CookiesAPI(this.win),
       DEV_ENV: this.dev,
       useQA: this.qa,
-      Templates: templates,
       SetStyle: setStyle,
       Toggle: toggle,
       Referrer: '',
       eventHelper,
       postAjax: this.postAjax.bind(this),
       isMobile: this.isMobile,
-      sanitizeTemplate: this.sanitizeTemplate.bind(this),
-      createIFrame: this.createIFrame.bind(this),
     });
-  }
-
-  /**
-   *
-   * @param {string} html
-   * @return {string}
-   */
-  sanitizeTemplate(html) {
-    return sanitizeHtml(html, this.win.document);
   }
 
   /**
@@ -116,19 +102,6 @@ export class AmpIntakerChatWidget extends AMP.BaseElement {
       .then(result => {
         success(result);
       });
-  }
-
-  /**
-   *
-   * @param {Element} container
-   */
-  createIFrame(container) {
-    const iframe = /** @type {!HTMLIFrameElement} */ (this.win.document.createElement(
-      'iframe'
-    ));
-    iframe.scrolling = 'no';
-    iframe.id = 'chatter-bot-iframe';
-    container.appendChild(iframe);
   }
 
   // /** @override */

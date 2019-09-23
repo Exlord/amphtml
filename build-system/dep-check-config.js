@@ -785,9 +785,4 @@ exports.rules = [
       /** DO NOT ADD TO WHITELIST */
     ],
   },
-  // intaker-chat-widget
-  {
-    filesMatching: 'extensions/**/*-intaker-chat-widget.js',
-    whitelist: 'src/sanitizer.js',
-  },
 ];
